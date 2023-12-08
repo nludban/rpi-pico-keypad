@@ -7,7 +7,6 @@ GP11-15	= 5x rows
 GP16-22	= 7x columns
 '''
 
-
 from machine import Pin
 
 pin_numlock = Pin(9)
@@ -82,9 +81,6 @@ KEYMAP = (
     ('Shift', '8', '7', '9', 'Fn', None, 'White'),
     ('Orange',),
 )
-
-# orange -> "0"
-# white -> nope.
 
 def scan_pressed():
     busy = False
