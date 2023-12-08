@@ -20,15 +20,17 @@ pin_backlight.init(pin_backlight.OUT)
 pin_backlight.value(0)	# On
 pin_backlight.value(1)	# Off
 
-
 import time
-for _ in range(20):
-    pin_numlock.value(0)
-    pin_backlight.value(0)
-    time.sleep(0.5)
-    pin_numlock.value(1)
-    pin_backlight.value(1)
-    time.sleep(0.5)
+
+if False:
+    # Flash the backlight and numlock LEDs
+    for _ in range(20):
+        pin_numlock.value(0)
+        pin_backlight.value(0)
+        time.sleep(0.5)
+        pin_numlock.value(1)
+        pin_backlight.value(1)
+        time.sleep(0.5)
 
 from machine import mem32 #, mem16, mem8
 
@@ -60,11 +62,13 @@ def scan_keys():
         rv.append((row, cols))
     return rv
 
-while False:
-    print()
-    for row, cols in scan_keys():
-        print(f'{row=} {cols=}')
-    time.sleep(1)
+if False:
+    # Show raw scan values
+    while True:
+        print()
+        for row, cols in scan_keys():
+            print(f'{row=} {cols=}')
+        time.sleep(1)
 
 # row=11 -- 0=2 .=4 -=8 +=1 enter=16
 # row=12 -- 1=2 2=4 3=8 x=1 green=32
