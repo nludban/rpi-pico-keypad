@@ -10,14 +10,14 @@ GP16-22	= 7x columns
 from machine import Pin
 
 pin_numlock = Pin(9)
-pin_numlock.init(pin_numlock.OUT)
-pin_numlock.value(0)	# On
-pin_numlock.value(1)	# Off
+pin_numlock.init(Pin.OUT)
+pin_numlock.value(0)	# Drain On
+pin_numlock.value(1)	# Drain Off
 
 pin_backlight = Pin(10)
-pin_backlight.init(pin_backlight.OUT)
-pin_backlight.value(0)	# On
-pin_backlight.value(1)	# Off
+pin_backlight.init(Pin.OUT)
+pin_backlight.value(1)	# FET On
+pin_backlight.value(0)	# FET Off
 
 import time
 
@@ -33,7 +33,7 @@ if False:
 
 from machine import mem32 #, mem16, mem8
 
-# peek/poke with mem32[adr]
+# peek/poke with mem32[addr]
 GPIO_IN		= 0xd000_0004
 GPIO_OUT	= 0xd000_0010
 GPIO_OUT_SET	= 0xd000_0014
