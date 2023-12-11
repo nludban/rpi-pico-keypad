@@ -15,9 +15,9 @@ COL_PIN_BASE = 16
 COL_PIN_COUNT = 7
 
 def keypad_init_sm(i_sm: int, scan_Hz: int = 200):
+    row_pin_base = ROW_PIN_BASE
+    col_pin_base = COL_PIN_BASE
     scan_Hz = max(scan_Hz, 7)  # 137-MHz / 2^16-1
-    row_pin_base = Pin(ROW_PIN_BASE, Pin.OUT, Pin.PULL_UP)
-    col_pin_base = Pin(COL_PIN_BASE, Pin.IN, Pin.PULL_UP)
     sm = rp2.StateMachine(i_sm,
                           freq=300 * scan_Hz,
                           prog=keyscan_prog,
@@ -34,7 +34,7 @@ def keyscan_read(sm: rp2.StateMachine) -> str:
     in_shiftdir=rp2.PIO.SHIFT_LEFT,
     #push_thresh=25,
     #autopush=False,
-    set_init=( PIO.OUT_LOW, ) * ROW_PIN_COUNT,  # Open-drain via pindirs
+    set_init=( PIO.OUT_LOW, ) * ROW_PIN_COUNT,
 )
 def keyscan_prog():
     label('changed')
@@ -117,11 +117,23 @@ def keyscan_decode(x):
 
 import time
 
-# Manual Pin init makes things work...?
-pins_matrix_rows = [ Pin(n, Pin.IN, Pin.PULL_UP)
-                     for n in range(11, 15+1) ]
-pins_matrix_cols = [ Pin(n, Pin.IN, Pin.PULL_UP)
-                     for n in range(16, 22+1) ]
+from machine import mem32
+PADS_BANK0_BASE = const(0x4001_c000)
+def set_pad_pull_up_enable(pin):
+    addr = PADS_BANK0_BASE + 0x04 + 4 * pin
+    x = mem32[addr]
+    x &= ~(1 << 2) # PDE
+    x |= (1 << 3)  # PUE
+    x |= (1 << 6)  # IE
+    mem32[addr] = x
+    return
+
+# Enable pullups on all row and column pins.
+# Poking bits is assumed to use less RAM than creating Pins.
+for n in range(ROW_PIN_COUNT):
+    set_pad_pull_up_enable(ROW_PIN_BASE + n)
+for n in range(COL_PIN_COUNT):
+    set_pad_pull_up_enable(COL_PIN_BASE + n)
 
 sm = keypad_init_sm(4, 200)
 
@@ -133,7 +145,5 @@ while True:
         print(keyscan_decode(x))
         old_x = x
     #time.sleep(1)
-
-
 
 #--#
